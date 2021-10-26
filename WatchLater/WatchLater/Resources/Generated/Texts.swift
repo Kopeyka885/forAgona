@@ -35,7 +35,7 @@ internal enum Text {
   }
 
   internal enum Test {
-    /// Test
+    /// Test 123
     internal static let test = Text.tr("Localizable", "Test.test")
   }
 }

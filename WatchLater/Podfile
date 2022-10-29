@@ -2,14 +2,14 @@
 # platform :ios, '9.0'
 
 # Uncomment the next line to define a global platform for your project
-platform :ios, '11.0'
+platform :ios, '9.0'
 
 def common_pods
   use_frameworks!
   pod "SnapKit"
-  pod "SwiftGen"
+  pod 'SwiftGen', "6.5.1"
   pod 'MemoryLeakTracker'
-  pod 'TKGrid', git: 'git@git.technokratos.com:ios/tkgrid.git'
+#  pod 'TKGrid', git: 'git@git.technokratos.com:ios/tkgrid.git'
 end
 
 target 'WatchLater_Dev' do
@@ -24,5 +24,3 @@ target 'WatchLater_Prod' do
   use_frameworks!
   common_pods
 end
-
-

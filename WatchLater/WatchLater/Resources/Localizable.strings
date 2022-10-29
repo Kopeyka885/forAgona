@@ -10,6 +10,28 @@ Common.dave = "Сохранить";
 Common.remove = "Удалить";
 Common.update = "Обновить";
 Common.logout = "Выйти";
+Common.profile = "Профиль";
+
+// MARK: - Authorization
+
+Authorization.emailAddres = "Адрес электронной почты";
+Authorization.password = "Пароль";
+Authorization.invalidCredentials = "Неверный логин или пароль";
+Authorization.enter = "Войти";
+Authorization.didNotRegistered = "Еще не зарегистрированы? ";
+Authorization.registration = " Регистрация";
+
+// MARK: - Registration
+
+Registration.confirmPassword = "Подтвердите пароль";
+Registration.passwordsDontMatch = "Пароли не совпадают";
+
+// MARK: - Films
+
+Films.collection = "Коллекция";
+Films.add = "Добавить";
+Films.willWatch = "Буду смотреть";
+Films.watched = "Просмотрено";
 
 // MARK: - Test
 

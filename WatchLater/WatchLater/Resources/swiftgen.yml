@@ -21,3 +21,9 @@ ib:
       output: ./Generated/StoryboardScenes.swift
     - templateName: segues-swift5
       output: ./Generated/StoryboardSegues.swift
+
+fonts:
+  inputs: ./Fonts
+  outputs:
+    - templateName: swift5
+      output: ./Generated/Fonts.swift

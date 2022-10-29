@@ -5,6 +5,7 @@ included:
 #  -
 
 disabled_rules:
+  - conditional_returns_on_newline
   - discouraged_optional_boolean
   - discouraged_optional_collection
   - explicit_enum_raw_value

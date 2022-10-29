@@ -1,0 +1,24 @@
+PODS:
+  - MemoryLeakTracker (1.0.0)
+  - SnapKit (5.6.0)
+  - SwiftGen (6.5.1)
+
+DEPENDENCIES:
+  - MemoryLeakTracker
+  - SnapKit
+  - SwiftGen (= 6.5.1)
+
+SPEC REPOS:
+  trunk:
+    - MemoryLeakTracker
+    - SnapKit
+    - SwiftGen
+
+SPEC CHECKSUMS:
+  MemoryLeakTracker: 4b722e83297e09fe4af64002ec3e3ccaa9a555d1
+  SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
+
+PODFILE CHECKSUM: 2abbf5487f48eb8c08cb3b27860867db3423f69f
+
+COCOAPODS: 1.11.3

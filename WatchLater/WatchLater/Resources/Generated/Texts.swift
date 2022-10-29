@@ -11,6 +11,21 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum Text {
 
+  internal enum Authorization {
+    /// Еще не зарегистрированы? 
+    internal static let didNotRegistered = Text.tr("Localizable", "Authorization.didNotRegistered")
+    /// Адрес электронной почты
+    internal static let emailAddres = Text.tr("Localizable", "Authorization.emailAddres")
+    /// Войти
+    internal static let enter = Text.tr("Localizable", "Authorization.enter")
+    /// Неверный логин или пароль
+    internal static let invalidCredentials = Text.tr("Localizable", "Authorization.invalidCredentials")
+    /// Пароль
+    internal static let password = Text.tr("Localizable", "Authorization.password")
+    ///  Регистрация
+    internal static let registration = Text.tr("Localizable", "Authorization.registration")
+  }
+
   internal enum Common {
     /// Отмена
     internal static let cancel = Text.tr("Localizable", "Common.cancel")
@@ -26,12 +41,32 @@ internal enum Text {
     internal static let next = Text.tr("Localizable", "Common.next")
     /// Нет
     internal static let no = Text.tr("Localizable", "Common.no")
+    /// Профиль
+    internal static let profile = Text.tr("Localizable", "Common.profile")
     /// Удалить
     internal static let remove = Text.tr("Localizable", "Common.remove")
     /// Обновить
     internal static let update = Text.tr("Localizable", "Common.update")
     /// Да
     internal static let yes = Text.tr("Localizable", "Common.yes")
+  }
+
+  internal enum Films {
+    /// Добавить
+    internal static let add = Text.tr("Localizable", "Films.add")
+    /// Коллекция
+    internal static let collection = Text.tr("Localizable", "Films.collection")
+    /// Просмотрено
+    internal static let watched = Text.tr("Localizable", "Films.watched")
+    /// Буду смотреть
+    internal static let willWatch = Text.tr("Localizable", "Films.willWatch")
+  }
+
+  internal enum Registration {
+    /// Подтвердите пароль
+    internal static let confirmPassword = Text.tr("Localizable", "Registration.confirmPassword")
+    /// Пароли не совпадают
+    internal static let passwordsDontMatch = Text.tr("Localizable", "Registration.passwordsDontMatch")
   }
 
   internal enum Test {

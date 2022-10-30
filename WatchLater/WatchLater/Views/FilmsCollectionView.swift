@@ -14,13 +14,13 @@ class FilmsCollectionView: UICollectionView {
     private var cells = [Film]()
     var reachedLastRow: (() -> Void)?
     
-    init(reachedLastRow: @escaping (() -> Void)) {
+    init(isVertical: Bool = true, reachedLastRow: @escaping (() -> Void)) {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
+        layout.scrollDirection = isVertical ? .vertical : .horizontal
         super.init(frame: .zero, collectionViewLayout: layout)
         
-        setDelegate()
-        setDataSource()
+        delegate = self
+        dataSource = self
         backgroundColor = .white
         self.reachedLastRow = reachedLastRow
         register(FilmCollectionViewCell.self, forCellWithReuseIdentifier: FilmCollectionViewCell.reuseID)
@@ -33,9 +33,6 @@ class FilmsCollectionView: UICollectionView {
 }
 
 extension FilmsCollectionView: UICollectionViewDataSource {
-    private func setDataSource() {
-        dataSource = self
-    }
     
     func collectionView(
         _ collectionView: UICollectionView,
@@ -80,11 +77,7 @@ extension FilmsCollectionView: FilmsCollectable {
     }
 }
 
-extension FilmsCollectionView: UICollectionViewDelegate {
-    private func setDelegate() {
-        delegate = self
-    }
-}
+extension FilmsCollectionView: UICollectionViewDelegate {}
 
 extension FilmsCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(

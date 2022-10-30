@@ -8,9 +8,19 @@
 
 import Foundation
 
-struct FilmPage: Codable {
-    let filmDtos: [Film]
+struct SystemFilmPage: Codable {
+    let filmDtos: [SystemFilm]
     let pageCount: Int
     let size: Int
     let status: String
+}
+
+struct ImdbFilmPage: Codable {
+    let items: [ImdbFilm]
+    let errorMessage: String?
+}
+
+struct ImdbSearchResult: Codable {
+    let results: [ImdbSearchItem]
+    let errorMessage: String?
 }

@@ -18,8 +18,7 @@ class SplashScreenViewController: UIViewController {
         super.viewDidLoad()
         initializeViews()
         initializeConstraints()
-//        animateLogo()
-        routeToAuthVC?()
+        animateLogo()
     }
     
     private func initializeViews() {

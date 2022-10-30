@@ -11,6 +11,7 @@ Common.remove = "Удалить";
 Common.update = "Обновить";
 Common.logout = "Выйти";
 Common.profile = "Профиль";
+Common.all = "Все";
 
 // MARK: - Authorization
 
@@ -32,6 +33,15 @@ Films.collection = "Коллекция";
 Films.add = "Добавить";
 Films.willWatch = "Буду смотреть";
 Films.watched = "Просмотрено";
+
+// MARK: - Search
+
+Search.search = "Поиск";
+Search.textfieldPlaceholder = "Введите название";
+Search.recomendation = "Рекомендации";
+Search.topFilms = "Top 250";
+Search.imdb = "IMDB";
+Search.hint = "Начните вводить название, и здесь появятся варианты фильмов";
 
 // MARK: - Test
 

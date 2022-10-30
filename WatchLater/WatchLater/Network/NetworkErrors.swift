@@ -12,4 +12,5 @@ enum NetworkError: String, LocalizedError {
     case errorStatusCode = "there is no 2xx response code"
     case noParameters = "there is not enough parameters"
     case errorWhileSendindRequest = "error while sending request:"
+    case failedToGetDataFromLocation = "there is error while getting data from location"
 }

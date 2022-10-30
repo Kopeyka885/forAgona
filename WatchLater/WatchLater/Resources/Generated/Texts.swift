@@ -27,6 +27,8 @@ internal enum Text {
   }
 
   internal enum Common {
+    /// Все
+    internal static let all = Text.tr("Localizable", "Common.all")
     /// Отмена
     internal static let cancel = Text.tr("Localizable", "Common.cancel")
     /// Закрыть
@@ -67,6 +69,21 @@ internal enum Text {
     internal static let confirmPassword = Text.tr("Localizable", "Registration.confirmPassword")
     /// Пароли не совпадают
     internal static let passwordsDontMatch = Text.tr("Localizable", "Registration.passwordsDontMatch")
+  }
+
+  internal enum Search {
+    /// Начните вводить название, и здесь появятся варианты фильмов
+    internal static let hint = Text.tr("Localizable", "Search.hint")
+    /// IMDB
+    internal static let imdb = Text.tr("Localizable", "Search.imdb")
+    /// Рекомендации
+    internal static let recomendation = Text.tr("Localizable", "Search.recomendation")
+    /// Поиск
+    internal static let search = Text.tr("Localizable", "Search.search")
+    /// Введите название
+    internal static let textfieldPlaceholder = Text.tr("Localizable", "Search.textfieldPlaceholder")
+    /// Top 250
+    internal static let topFilms = Text.tr("Localizable", "Search.topFilms")
   }
 
   internal enum Test {

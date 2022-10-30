@@ -25,11 +25,7 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
     private var pageNumber = 0
     private let pageSize = 30
     private var maxPageNumber = Int.max
-    private let filmsService: FilmsServiceProtocol
-    
-    init(filmsService: FilmsServiceProtocol) {
-        self.filmsService = filmsService
-    }
+    private let filmsService = FilmsService()
     
     func viewDidLoad() {
         loadNextPage()
@@ -51,9 +47,20 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
             guard let self = self else { return }
             switch result {
             case .success(let page):
+                var films = [Film]()
+                for item in page.filmDtos {
+                    let film = Film(id: item.id,
+                                    title: item.title,
+                                    posterId: item.posterId,
+                                    description: item.description,
+                                    genres: item.genres,
+                                    rating: item.rating,
+                                    date: item.timestamp)
+                    films.append(film)
+                }
                 self.maxPageNumber = page.pageCount
-                self.didLoadFilms?(page.filmDtos)
-                self.downloadFilmsPosters(films: page.filmDtos)
+                self.didLoadFilms?(films)
+                self.downloadFilmsPosters(films: films)
                 
             case .failure(let error):
                 print(error.localizedDescription)

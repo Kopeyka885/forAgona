@@ -9,7 +9,7 @@
 import Foundation
 
 protocol FilmsServiceProtocol {
-    func downloadFilmsPage(page: Int, size: Int, completion: @escaping (Result<FilmPage, Error>) -> Void)
+    func downloadFilmsPage(page: Int, size: Int, completion: @escaping (Result<SystemFilmPage, Error>) -> Void)
     func downloadPoster(filmId: Int, posterId: String?, completion: @escaping (Result<Data?, Error>) -> Void)
 }
 
@@ -18,7 +18,7 @@ class FilmsService: FilmsServiceProtocol {
     func downloadFilmsPage(
         page: Int,
         size: Int,
-        completion: @escaping (Result<FilmPage, Error>) -> Void
+        completion: @escaping (Result<SystemFilmPage, Error>) -> Void
     ) {
         let queryParams = "page=\(page)&size=\(size)"
         let request = NetworkManager().makeRequest(path: Endpoints.getFilms.rawValue, method: "GET", query: queryParams)
@@ -31,8 +31,7 @@ class FilmsService: FilmsServiceProtocol {
             do {
                 try response?.validateStatusCode()
                 if let data = data {
-                    let decoder = JSONDecoder()
-                    let decodedData = try decoder.decode(FilmPage.self, from: data)
+                    let decodedData = try JSONDecoder().decode(SystemFilmPage.self, from: data)
                     completion(.success(decodedData))
                 }
             } catch {
@@ -60,8 +59,7 @@ class FilmsService: FilmsServiceProtocol {
                 do {
                     try response?.validateStatusCode()
                     if let data = data {
-                        let decoder = JSONDecoder()
-                        let decodedData = try decoder.decode(Binary.self, from: data)
+                        let decodedData = try JSONDecoder().decode(Binary.self, from: data)
                         completion(.success(decodedData.data))
                     }
                 } catch {

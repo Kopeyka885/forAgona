@@ -18,6 +18,8 @@ protocol SearchViewModelOutput {
     var didLoadTopFilms: ((_ films: [Film]) -> Void)? { get set }
     var didLoadRecomendedFilmsPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
     var didLoadTopFilmsPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
+    var didLoadSearchedFIlms: ((_ films: [Film]) -> Void)? { get set }
+    var didLoadSearchedFilmsPostres: ((_ posters: [Int: Data]) -> Void)? { get set }
 }
 
 final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
@@ -25,6 +27,8 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
     var didLoadTopFilms: (([Film]) -> Void)?
     var didLoadRecomendedFilmsPosters: (([Int: Data]) -> Void)?
     var didLoadTopFilmsPosters: ((_ posters: [Int: Data]) -> Void)?
+    var didLoadSearchedFIlms: ((_ films: [Film]) -> Void)?
+    var didLoadSearchedFilmsPostres: ((_ posters: [Int: Data]) -> Void)?
     private let imdbService: ImdbServiceProtocol
     
     init(imdbService: ImdbServiceProtocol) {
@@ -76,7 +80,7 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
             }
         }
     }
-
+    
     func viewReachedLastRow() {
         print("do nothing")
     }
@@ -85,7 +89,19 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
         imdbService.searchFilmsByTitle(searchQuery: text) { response in
             switch response {
             case .success(let searchResult):
-                print("idi nahuy zaebal")
+                var films = [Film]()
+                for item in searchResult.results {
+                    let film = Film(id: Int(item.id[item.id.index(item.id.startIndex, offsetBy: 2)...]) ?? 0,
+                                    title: item.title,
+                                    posterId: item.image,
+                                    description: item.description,
+                                    genres: nil,
+                                    rating: nil,
+                                    date: nil)
+                    films.append(film)
+                }
+                self.didLoadSearchedFIlms?(films)
+                self.downloadFilmsPosters(filmCategory: .search, films: films)
                 
             case .failure(let error):
                 print(error.localizedDescription)
@@ -116,6 +132,9 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
                 
             case .top:
                 self.didLoadTopFilmsPosters?(posters)
+                
+            case .search:
+                self.didLoadSearchedFilmsPostres?(posters)
             }
         }
     }
@@ -124,4 +143,5 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
 enum FilmCategory {
     case recomended
     case top
+    case search
 }

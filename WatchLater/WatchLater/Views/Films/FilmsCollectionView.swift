@@ -10,7 +10,7 @@ import UIKit
 
 class FilmsCollectionView: UICollectionView {
     
-    private var filmsPosters = [Int: Data?]()
+    private var filmsPosters = [Int: Data]()
     private var cells = [Film]()
     var reachedLastRow: (() -> Void)?
     
@@ -60,7 +60,7 @@ extension FilmsCollectionView: UICollectionViewDataSource {
             cell.imageView.image = nil
             
             let filmId = cells[indexPath.row].id
-            if let posterData = filmsPosters[filmId], let posterData = posterData {
+            if let posterData = filmsPosters[filmId] {
                 cell.imageView.image = UIImage(data: posterData)
             }
             
@@ -72,7 +72,7 @@ extension FilmsCollectionView: FilmsCollectable {
     func addFilms(films: [Film]) {
         cells.append(contentsOf: films)
     }
-    func addPostersData(postersData: [Int: Data?]) {
+    func addPostersData(postersData: [Int: Data]) {
         filmsPosters.merge(postersData) { data1, _ in return data1 }
     }
 }

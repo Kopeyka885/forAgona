@@ -77,7 +77,7 @@ class ImdbService: ImdbServiceProtocol {
     }
     
     func searchFilmsByTitle(searchQuery: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void) {
-        let path = "/SearchMovie"
+        let path = "/SearchMovie/"
         let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: searchQuery)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {

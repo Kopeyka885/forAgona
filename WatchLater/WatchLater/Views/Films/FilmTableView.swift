@@ -57,7 +57,7 @@ extension FilmTableView: FilmsCollectable {
         self.cells.append(contentsOf: films)
     }
     
-    func addPostersData(postersData: [Int: Data?]) {
+    func addPostersData(postersData: [Int: Data]) {
         print("")
     }
 }

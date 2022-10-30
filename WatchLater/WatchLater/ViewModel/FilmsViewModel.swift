@@ -15,13 +15,13 @@ protocol FilmsViewModelInput {
 }
 protocol FilmsViewModelOutput {
     var didLoadFilms: ((_ films: [Film]) -> Void)? { get set }
-    var didLoadPosters: ((_ posters: [Int: Data?]) -> Void)? { get set }
+    var didLoadPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
 }
 
 final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
     
     var didLoadFilms: ((_ films: [Film]) -> Void)?
-    var didLoadPosters: ((_ posters: [Int: Data?]) -> Void)?
+    var didLoadPosters: ((_ posters: [Int: Data]) -> Void)?
     private var pageNumber = 0
     private let pageSize = 30
     private var maxPageNumber = Int.max
@@ -71,7 +71,7 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
     
     private func downloadFilmsPosters(films: [Film]) {
         let group = DispatchGroup()
-        var posters = [Int: Data?]()
+        var posters = [Int: Data]()
         for film in films {
             group.enter()
             filmsService.downloadPoster(filmId: film.id, posterId: film.posterId) { response in

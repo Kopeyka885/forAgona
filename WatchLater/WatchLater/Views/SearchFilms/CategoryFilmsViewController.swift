@@ -8,7 +8,7 @@
 import UIKit
 
 class CategoryFilmsViewController: UIViewController {
-
+    
     private var pageHeader: PageHeader
     private var filmsCollection: (FilmsCollectable & UIView)!
     private var viewModel: (RecomendedFilmsViewModelInput & RecomendedFilmsViewModelOutput)!
@@ -21,11 +21,15 @@ class CategoryFilmsViewController: UIViewController {
             
         case .top:
             pageHeader = PageHeader(text: Text.Search.topFilms)
+            
+        case .search:
+            pageHeader = PageHeader(text: Text.Search.search)
         }
         self.filmsCategory = filmsCategory
         super.init(nibName: nil, bundle: nil)
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

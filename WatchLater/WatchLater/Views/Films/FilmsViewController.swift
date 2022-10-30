@@ -66,7 +66,6 @@ class FilmsViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = searchBtn
         navigationItem.rightBarButtonItem = tableOrListBtn
-        title = ""
         navigationItem.titleView = UIImageView(image: Asset.smallLogo.image)
         
         view.addSubview(pageHeader)

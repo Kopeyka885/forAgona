@@ -14,19 +14,19 @@ protocol RecomendedFilmsViewModelInput {
 
 protocol RecomendedFilmsViewModelOutput {
     var didLoadFilms: ((_ films: [Film]) -> Void)? { get set }
-    var didLoadPosters: ((_ posters: [Int: Data?]) -> Void)? { get set }
+    var didLoadPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
 }
 
 final class RecomendedFilmsViewModel: RecomendedFilmsViewModelInput, RecomendedFilmsViewModelOutput {
     var didLoadFilms: (([Film]) -> Void)?
-    var didLoadPosters: (([Int: Data?]) -> Void)?
+    var didLoadPosters: (([Int: Data]) -> Void)?
     private let imdbService = ImdbService()
     private var films = [Film]()
     private var images = [Int: String]()
     private var currentPage = 0
     private let pageSize = 30
     private var filmsCategory: FilmCategory
-
+    
     init(filmsCategory: FilmCategory) {
         self.filmsCategory = filmsCategory
     }
@@ -65,6 +65,9 @@ final class RecomendedFilmsViewModel: RecomendedFilmsViewModelInput, RecomendedF
             imdbService.getTopFIlms { response in
                 self.processingResponse(response: response)
             }
+            
+        case .search:
+            print("do nothing")
         }
     }
     
@@ -78,7 +81,7 @@ final class RecomendedFilmsViewModel: RecomendedFilmsViewModelInput, RecomendedF
     
     private func loadNextPage() {
         let group = DispatchGroup()
-        var posters = [Int: Data?]()
+        var posters = [Int: Data]()
         
         let startIndex = currentPage * pageSize
         let endIndex = (currentPage + 1) * pageSize

@@ -28,7 +28,7 @@ final class AuthorizationViewModel: AuthorizationViewModelInput, AuthorizationVi
     func authorizationButtonPressed(email: String, password: String) {
         authorizationService.authenticateUser(email: email, password: password) { result in
             switch result {
-            case .success(let tokenDto):
+            case .success:
                 self.authorizationResponseReceived?()
                 
             case .failure(let error):

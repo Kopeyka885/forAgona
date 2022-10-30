@@ -8,7 +8,7 @@
 import UIKit
 
 class SearchFilmTableViewCell: UITableViewCell {
-
+    
     static let reuseID = "SearchFilmTableViewCell"
     
     let image: UIImageView = {
@@ -25,7 +25,7 @@ class SearchFilmTableViewCell: UITableViewCell {
         view.sizeToFit()
         return view
     }()
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -33,12 +33,15 @@ class SearchFilmTableViewCell: UITableViewCell {
         addSubview(title)
         
         image.snp.makeConstraints { make in
-            make.leading.trailing.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(50)
+            make.leading.top.equalToSuperview()
+            make.height.equalTo(160)
+            make.width.equalTo(100)
+            make.bottom.equalToSuperview().inset(Grid.verticalOffset_l)
         }
         title.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(image.snp.bottom)
+            make.trailing.equalToSuperview()
+            make.leading.equalTo(image.snp.trailing).offset(Grid.horizontalOffset)
+            make.top.equalToSuperview()
             make.height.equalTo(50)
         }
     }

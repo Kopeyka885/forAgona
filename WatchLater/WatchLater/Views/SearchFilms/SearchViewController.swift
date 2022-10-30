@@ -33,6 +33,7 @@ class SearchViewController: UIViewController {
     }()
     
     private var label: UILabel?
+    private var searchTableView: SearchFilmTableView?
     private var segmentControl: UISegmentedControl?
     private var recomendationCategory: FilmCategoryView!
     private var topFilmsCategory: FilmCategoryView!
@@ -130,6 +131,20 @@ class SearchViewController: UIViewController {
             self.topFilmsCategory.collectionView.addPostersData(postersData: posters)
             self.topFilmsCategory.collectionView.reloadData()
         }
+        
+        viewModel.didLoadSearchedFIlms = { films in
+            DispatchQueue.main.async {
+                self.searchTableView?.addFilms(films: films)
+                self.searchTableView?.reloadData()
+            }
+        }
+        
+        viewModel.didLoadSearchedFilmsPostres = { posters in
+            DispatchQueue.main.async {
+                self.searchTableView?.addPostersData(postersData: posters)
+                self.searchTableView?.reloadData()
+            }
+        }
     }
     
     @objc func recomendedAllTapped() {
@@ -144,27 +159,47 @@ class SearchViewController: UIViewController {
 }
 
 extension SearchViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        recomendationCategory.isHidden = true
-        topFilmsCategory.isHidden = true
-        addViewsWhileEditing()
-    }
     
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
         textField.endEditing(true)
         removeViewsAfterEditing()
         recomendationCategory.isHidden = false
         topFilmsCategory.isHidden = false
+        searchTableView?.removeFromSuperview()
+        
         searchTextField.snp.remakeConstraints { make in
             make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
             make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
             make.height.equalTo(40)
         }
+        return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        recomendationCategory.isHidden = true
+        topFilmsCategory.isHidden = true
+        addViewsWhileEditing(isEmpty: textField.text?.isEmpty ?? true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.endEditing(true)
+        removeViewsAfterEditing()
+        
+        searchTableView = SearchFilmTableView()
+        guard let searchTableView = searchTableView else { return false }
+        view.addSubview(searchTableView)
+        
+        searchTableView.snp.makeConstraints({ make in
+            make.leading.trailing.equalToSuperview().inset(Grid.horizontalInset)
+            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        })
+        
         viewModel.searchDidEnd(text: textField.text)
         return true
     }
     
-    func addViewsWhileEditing() {
+    func addViewsWhileEditing(isEmpty: Bool) {
         segmentControl = UISegmentedControl(items: [Text.Search.imdb, Text.Films.collection])
         guard let segmentControl = segmentControl else { return }
         segmentControl.setTitleTextAttributes([
@@ -172,19 +207,6 @@ extension SearchViewController: UITextFieldDelegate {
         segmentControl.selectedSegmentIndex = 0
         view.addSubview(segmentControl)
         
-        label = UILabel()
-        guard let label = label else { return }
-        label.text = Text.Search.hint
-        label.font = FontFamily.SFProText.regular.font(size: 16)
-        label.textColor = Asset.darkGray.color
-        label.numberOfLines = 0
-        view.addSubview(label)
-        
-        label.snp.makeConstraints { make in
-            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
-            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
-            make.height.equalTo(50)
-        }
         segmentControl.snp.makeConstraints { make in
             make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
             make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
@@ -196,10 +218,25 @@ extension SearchViewController: UITextFieldDelegate {
             make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
             make.height.equalTo(40)
         }
+        
+        if isEmpty {
+            label = UILabel()
+            guard let label = label else { return }
+            label.text = Text.Search.hint
+            label.font = FontFamily.SFProText.regular.font(size: 16)
+            label.textColor = Asset.darkGray.color
+            label.numberOfLines = 0
+            view.addSubview(label)
+            
+            label.snp.makeConstraints { make in
+                make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
+                make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
+                make.height.equalTo(50)
+            }
+        }
     }
     
     func removeViewsAfterEditing() {
         label?.removeFromSuperview()
-        segmentControl?.removeFromSuperview()
     }
 }

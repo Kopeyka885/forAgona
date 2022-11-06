@@ -33,16 +33,17 @@ class FilmsViewController: UIViewController {
         return segmentControl
     }()
     
-    private var filmsCollectionView: (FilmsCollectable & UIView)!
+    private var filmsCollectionView: FilmsCollectionView!
+    private var filmsTableView: FilmTableView?
     private var viewModel: (FilmsViewModelInput & FilmsViewModelOutput)!
-    private var isCollectionView = true
+    private var isCollectionView = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel = FilmsViewModel()
-        filmsCollectionView = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
         addSubviews()
         makeConstraints()
+        changePresenationMode()
         setupBinding()
         viewModel.viewDidLoad()
     }
@@ -71,7 +72,6 @@ class FilmsViewController: UIViewController {
         view.addSubview(pageHeader)
         view.addSubview(mainFrame)
         view.addSubview(categorySwitcher)
-        view.addSubview(filmsCollectionView)
         view.addSubview(bottomBorder)
     }
     
@@ -92,12 +92,6 @@ class FilmsViewController: UIViewController {
             make.centerX.equalToSuperview()
             make.height.equalTo(40)
         }
-        filmsCollectionView.snp.makeConstraints { make in
-            make.top.equalTo(categorySwitcher.snp.bottom).offset(20)
-            make.width.equalToSuperview().multipliedBy(0.92)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.centerX.equalToSuperview()
-        }
         bottomBorder.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide)
@@ -110,12 +104,18 @@ class FilmsViewController: UIViewController {
             DispatchQueue.main.async {
                 self.filmsCollectionView.addFilms(films: films)
                 self.filmsCollectionView.reloadData()
+                guard let filmsTableView = self.filmsTableView else { return }
+                filmsTableView.addFilms(films: films)
+                filmsTableView.reloadData()
             }
         }
         viewModel.didLoadPosters = { posters in
             DispatchQueue.main.async {
                 self.filmsCollectionView.addPostersData(postersData: posters)
                 self.filmsCollectionView.reloadData()
+                guard let filmsTableView = self.filmsTableView else { return }
+                filmsTableView.addPostersData(postersData: posters)
+                filmsTableView.reloadData()
             }
         }
     }
@@ -128,24 +128,35 @@ class FilmsViewController: UIViewController {
     @objc func listOrTableTapped() {
         self.viewModel.viewDidBeginRefreshing()
         DispatchQueue.main.async {
-            self.filmsCollectionView.removeFromSuperview()
-            self.filmsCollectionView = nil
-            
-            if self.isCollectionView {
-                self.navigationItem.rightBarButtonItem?.image = Asset.table.image
-                self.filmsCollectionView = FilmTableView(reachedLastRow: self.viewModel.viewReachedLastRow)
-            } else {
-                self.navigationItem.rightBarButtonItem?.image = Asset.list.image
-                self.filmsCollectionView = FilmsCollectionView(reachedLastRow: self.viewModel.viewReachedLastRow)
+            self.changePresenationMode()
+        }
+    }
+    
+    func changePresenationMode() {
+        isCollectionView = !isCollectionView
+        if isCollectionView {
+            if let filmsTableView = filmsTableView {
+                filmsTableView.removeFromSuperview()
             }
-            
-            self.isCollectionView = !self.isCollectionView
-            self.view.addSubview(self.filmsCollectionView)
-            let inset = self.tabBarController?.tabBar.frame.height
-            self.filmsCollectionView.snp.makeConstraints { make in
-                make.top.equalTo(self.categorySwitcher).offset(20)
+            navigationItem.rightBarButtonItem?.image = Asset.table.image
+            filmsCollectionView = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
+            view.addSubview(filmsCollectionView)
+            filmsCollectionView.snp.makeConstraints { make in
+                make.top.equalTo(categorySwitcher.snp.bottom).offset(20)
                 make.width.equalToSuperview().multipliedBy(0.92)
-                make.bottom.equalToSuperview().inset(inset ?? 0)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
+                make.centerX.equalToSuperview()
+            }
+        } else {
+            filmsCollectionView.removeFromSuperview()
+            navigationItem.rightBarButtonItem?.image = Asset.list.image
+            filmsTableView = FilmTableView(reachedLastRow: viewModel.viewReachedLastRow)
+            guard let filmsTableView = filmsTableView else { return }
+            view.addSubview(filmsTableView)
+            filmsTableView.snp.makeConstraints { make in
+                make.top.equalTo(categorySwitcher.snp.bottom).offset(20)
+                make.width.equalToSuperview().multipliedBy(0.92)
+                make.bottom.equalTo(view.safeAreaLayoutGuide)
                 make.centerX.equalToSuperview()
             }
         }

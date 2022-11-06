@@ -10,7 +10,7 @@ import Foundation
 
 protocol FilmsServiceProtocol {
     func downloadFilmsPage(page: Int, size: Int, completion: @escaping (Result<SystemFilmPage, Error>) -> Void)
-    func downloadPoster(filmId: Int, posterId: String?, completion: @escaping (Result<Data?, Error>) -> Void)
+    func downloadPoster(posterId: String?, completion: @escaping (Result<Data?, Error>) -> Void)
 }
 
 class FilmsService: FilmsServiceProtocol {
@@ -41,7 +41,6 @@ class FilmsService: FilmsServiceProtocol {
     }
     
     func downloadPoster(
-        filmId: Int,
         posterId: String?,
         completion: @escaping (Result<Data?, Error>) -> Void) {
             guard let id = posterId else {

@@ -10,8 +10,7 @@ import Foundation
 
 protocol FilmsCollectable {
     func addFilms(films: [Film])
-    func addPostersData(postersData: [Int: Data])
-    func reloadData()
+//    func addPostersData(postersData: [Int: Data])
 }
 
 struct Film {

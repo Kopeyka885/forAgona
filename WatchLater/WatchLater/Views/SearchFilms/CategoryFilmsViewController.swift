@@ -67,13 +67,13 @@ class CategoryFilmsViewController: UIViewController {
         viewModel.didLoadFilms = { films in
             DispatchQueue.main.async {
                 self.filmsCollection.addFilms(films: films)
-                self.filmsCollection.reloadData()
+//                self.filmsCollection.reloadData()
             }
         }
         viewModel.didLoadPosters = { posters in
             DispatchQueue.main.async {
-                self.filmsCollection.addPostersData(postersData: posters)
-                self.filmsCollection.reloadData()
+//                self.filmsCollection.addPostersData(postersData: posters)
+//                self.filmsCollection.reloadData()
             }
         }
     }

@@ -123,12 +123,12 @@ class SearchViewController: UIViewController {
         }
         viewModel.didLoadRecomendedFilmsPosters = { posters in
             DispatchQueue.main.async {
-                self.recomendationCategory.collectionView.addPostersData(postersData: posters)
+//                self.recomendationCategory.collectionView.addPostersData(postersData: posters)
                 self.recomendationCategory.collectionView.reloadData()
             }
         }
         viewModel.didLoadTopFilmsPosters = { posters in
-            self.topFilmsCategory.collectionView.addPostersData(postersData: posters)
+//            self.topFilmsCategory.collectionView.addPostersData(postersData: posters)
             self.topFilmsCategory.collectionView.reloadData()
         }
         
@@ -178,7 +178,7 @@ extension SearchViewController: UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         recomendationCategory.isHidden = true
         topFilmsCategory.isHidden = true
-        addViewsWhileEditing(isEmpty: textField.text?.isEmpty ?? true)
+        addSearchViews(isEmpty: textField.text?.isEmpty ?? true)
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -199,7 +199,7 @@ extension SearchViewController: UITextFieldDelegate {
         return true
     }
     
-    func addViewsWhileEditing(isEmpty: Bool) {
+    func addSearchViews(isEmpty: Bool) {
         segmentControl = UISegmentedControl(items: [Text.Search.imdb, Text.Films.collection])
         guard let segmentControl = segmentControl else { return }
         segmentControl.setTitleTextAttributes([

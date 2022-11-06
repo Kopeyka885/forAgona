@@ -1,24 +1,28 @@
 PODS:
+  - Kingfisher (4.10.1)
   - MemoryLeakTracker (1.0.0)
   - SnapKit (5.6.0)
   - SwiftGen (6.5.1)
 
 DEPENDENCIES:
+  - Kingfisher
   - MemoryLeakTracker
   - SnapKit
   - SwiftGen (= 6.5.1)
 
 SPEC REPOS:
   trunk:
+    - Kingfisher
     - MemoryLeakTracker
     - SnapKit
     - SwiftGen
 
 SPEC CHECKSUMS:
+  Kingfisher: c148cd7b47ebde9989f6bc7c27dcaa79d81279a0
   MemoryLeakTracker: 4b722e83297e09fe4af64002ec3e3ccaa9a555d1
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftGen: a6d22010845f08fe18fbdf3a07a8e380fd22e0ea
 
-PODFILE CHECKSUM: 2abbf5487f48eb8c08cb3b27860867db3423f69f
+PODFILE CHECKSUM: 1aed1b34051c5d9193006c8cde3fe2cb9f14ec74
 
 COCOAPODS: 1.11.3

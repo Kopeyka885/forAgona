@@ -9,6 +9,7 @@ def common_pods
   pod "SnapKit"
   pod 'SwiftGen', "6.5.1"
   pod 'MemoryLeakTracker'
+  pod 'Kingfisher'
 #  pod 'TKGrid', git: 'git@git.technokratos.com:ios/tkgrid.git'
 end
 

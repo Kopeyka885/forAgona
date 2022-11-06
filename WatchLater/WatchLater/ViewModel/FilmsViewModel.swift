@@ -74,7 +74,7 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
         var posters = [Int: Data]()
         for film in films {
             group.enter()
-            filmsService.downloadPoster(filmId: film.id, posterId: film.posterId) { response in
+            filmsService.downloadPoster(posterId: film.posterId) { response in
                 switch response {
                 case .success(let data):
                     posters[film.id] = data

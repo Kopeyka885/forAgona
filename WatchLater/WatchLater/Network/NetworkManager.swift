@@ -10,6 +10,11 @@ import Foundation
 
 class NetworkManager {
     
+    func makeUrlToDownloadImage(path: String, id: String) -> URL {
+        let url = URL(string: "\(baseURL)/\(path)/\(id)")!
+        return url
+    }
+    
     func makeRequest(path: String, method: String, query: String?, auth: Bool = true) -> URLRequest {
         var urlString = baseURL + path
         if let query = query {

@@ -54,10 +54,8 @@ extension FilmTableView: UITableViewDataSource {
 
 extension FilmTableView: FilmsCollectable {
     func addFilms(films: [Film]) {
-        self.cells.append(contentsOf: films)
-    }
-    
-    func addPostersData(postersData: [Int: Data]) {
-        print("")
+        cells.append(contentsOf: films)
+        let indexPaths = Array((cells.count - films.count) ..< cells.count).map({ IndexPath(row: $0, section: 0) })
+        self.insertRows(at: indexPaths, with: .automatic)
     }
 }

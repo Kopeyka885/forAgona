@@ -7,11 +7,13 @@
 //
 
 import Foundation
+import Kingfisher
 
 protocol FilmsViewModelInput {
     func viewDidLoad()
     func viewDidBeginRefreshing()
     func viewReachedLastRow()
+    func showCell(_ cell: FilmCollectionViewCell, _ posterId: String, _ index: IndexPath)
 }
 protocol FilmsViewModelOutput {
     var didLoadFilms: ((_ films: [Film]) -> Void)? { get set }
@@ -40,6 +42,37 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
         loadNextPage()
     }
     
+    func showCell(_ cell: FilmCollectionViewCell, _ posterId: String, _ indexPath: IndexPath) {
+        var key = ""
+        DispatchQueue.main.async {
+            key = cell.title.text ?? ""
+        }
+        ImageCache.default.retrieveImage(forKey: key, options: nil, completionHandler: { image, cacheType in
+            if let image = image {
+                DispatchQueue.main.async {
+                    cell.imageView.image = image
+                }
+            } else {
+                FilmsService().downloadPoster(posterId: posterId) { response in
+                    switch response {
+                    case .success(let data):
+                        let image = Kingfisher.image(data: data ?? Data(),
+                                                     scale: 1,
+                                                     preloadAllAnimationData: true,
+                                                     onlyFirstFrame: true)
+                        ImageCache.default.store(image ?? Image(), forKey: key)
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
+                        }
+                        
+                    case .failure(let error):
+                        print(error)
+                    }
+                }
+            }
+        })
+    }
+    
     private func loadNextPage() {
         guard pageNumber < maxPageNumber else { return }
         
@@ -47,46 +80,24 @@ final class FilmsViewModel: FilmsViewModelInput, FilmsViewModelOutput {
             guard let self = self else { return }
             switch result {
             case .success(let page):
-                var films = [Film]()
-                for item in page.filmDtos {
-                    let film = Film(id: item.id,
-                                    title: item.title,
-                                    posterId: item.posterId,
-                                    description: item.description,
-                                    genres: item.genres,
-                                    rating: item.rating,
-                                    date: item.timestamp)
-                    films.append(film)
+                let films = page.filmDtos.map { item in
+                    Film(
+                        id: item.id,
+                        title: item.title,
+                        posterId: item.posterId,
+                        description: item.description,
+                        genres: item.genres,
+                        rating: item.rating,
+                        date: item.timestamp
+                    )
                 }
                 self.maxPageNumber = page.pageCount
                 self.didLoadFilms?(films)
-                self.downloadFilmsPosters(films: films)
                 
             case .failure(let error):
                 print(error.localizedDescription)
             }
         }
         self.pageNumber += 1
-    }
-    
-    private func downloadFilmsPosters(films: [Film]) {
-        let group = DispatchGroup()
-        var posters = [Int: Data]()
-        for film in films {
-            group.enter()
-            filmsService.downloadPoster(posterId: film.posterId) { response in
-                switch response {
-                case .success(let data):
-                    posters[film.id] = data
-                    
-                case .failure(let error):
-                    print(error)
-                }
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) {
-            self.didLoadPosters?(posters)
-        }
     }
 }

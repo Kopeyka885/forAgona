@@ -1,5 +1,5 @@
 //
-//  FilmCategoryView.swift
+//  CategoryFilmsView.swift
 //  StartProject-ios
 //
 //  Created by Камиль Кадыров on 22.10.2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FilmCategoryView: UIView {
+class CategoryFilmsView: UIView {
     private let label: UILabel = {
         let view = UILabel()
         view.font = FontFamily.SFProDisplay.bold.font(size: 31)
@@ -24,11 +24,11 @@ class FilmCategoryView: UIView {
         return button
     }()
     
-    var collectionView: SearchFilmsCollectionView!
+    var collectionView: SearchFilmsCollectionView
     
     init(categoryName: String, collectionView: SearchFilmsCollectionView) {
-        super.init(frame: .zero)
         self.collectionView = collectionView
+        super.init(frame: .zero)
         label.text = categoryName
         
         addSubview(label)
@@ -47,7 +47,7 @@ class FilmCategoryView: UIView {
             make.width.equalToSuperview().multipliedBy(0.3)
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(label.snp.bottom).offset(Grid.verticalOffset_s)
+            make.top.equalTo(label.snp.bottom).offset(Grid.verticalOffsetSmall)
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(200)
         }

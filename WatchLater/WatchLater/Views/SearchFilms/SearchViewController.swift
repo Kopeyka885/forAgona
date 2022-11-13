@@ -10,39 +10,41 @@ import UIKit
 
 class SearchViewController: UIViewController {
     
-    private let pageHeader = PageHeader(text: Text.Search.search)
-    
-    private let bottomBorder: UIView = {
-        let lineView = UIView()
-        lineView.layer.borderWidth = 2
-        lineView.layer.borderColor = Asset.darkGray.color.cgColor
-        return lineView
-    }()
-    
-    private let mainFrame: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        return view
-    }()
+    private var searchTableView = SearchFilmsTableView()
+    private var recomendationCategory: CategoryFilmsView!
+    private var topFilmsCategory: CategoryFilmsView!
+    private var viewModel: (SearchViewModelInput & SearchViewModelOutput)!
     
     private let searchTextField: UISearchTextField = {
         let view = UISearchTextField()
         view.placeholder = Text.Search.textfieldPlaceholder
         view.keyboardType = .webSearch
+        view.clearButtonMode = .always
+        view.text = ""
         return view
     }()
     
-    private var label: UILabel?
-    private var searchTableView: SearchFilmTableView?
-    private var segmentControl: UISegmentedControl?
-    private var recomendationCategory: FilmCategoryView!
-    private var topFilmsCategory: FilmCategoryView!
-    private var viewModel: (SearchViewModelInput & SearchViewModelOutput)!
+    private var label: UILabel = {
+        let view = UILabel()
+        view.isHidden = true
+        view.text = Text.Search.hint
+        view.font = FontFamily.SFProText.regular.font(size: 16)
+        view.textColor = Asset.darkGray.color
+        view.numberOfLines = 0
+        return view
+    }()
+    
+    private var segmentControl: UISegmentedControl = {
+        let view = UISegmentedControl(items: [Text.Search.imdb, Text.Films.collection])
+        view.isHidden = true
+        view.setTitleTextAttributes([.font: FontFamily.SFProText.medium.font(size: 16)], for: .normal)
+        view.selectedSegmentIndex = 0
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         searchTextField.delegate = self
-        title = ""
         viewModel = SearchViewModel(imdbService: ImdbService())
         addSubviews()
         makeConstraints()
@@ -53,96 +55,82 @@ class SearchViewController: UIViewController {
     private func addSubviews() {
         navigationItem.titleView = UIImageView(image: Asset.smallLogo.image)
         view.backgroundColor = Asset.lightGray.color
+        searchTableView.isHidden = true
         
-        recomendationCategory = FilmCategoryView(
+        recomendationCategory = CategoryFilmsView(
             categoryName: Text.Search.recomendation,
             collectionView: SearchFilmsCollectionView(isVertical: false, reachedLastRow: viewModel.viewReachedLastRow))
         
-        topFilmsCategory = FilmCategoryView(
+        topFilmsCategory = CategoryFilmsView(
             categoryName: Text.Search.topFilms,
             collectionView: SearchFilmsCollectionView(isVertical: false, reachedLastRow: viewModel.viewReachedLastRow))
         
         recomendationCategory.allButton.addTarget(self, action: #selector(recomendedAllTapped), for: .touchUpInside)
         topFilmsCategory.allButton.addTarget(self, action: #selector(topFilmsAllTapped), for: .touchUpInside)
         
-        view.addSubview(pageHeader)
-        view.addSubview(mainFrame)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = Text.Search.search
+        navigationController?.navigationBar.layer.shadowColor = Asset.lightGray.color.cgColor
+        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 1)
+        navigationController?.navigationBar.layer.shadowOpacity = 1
+        
+        view.addSubview(label)
+        view.addSubview(segmentControl)
+        view.addSubview(searchTableView)
         view.addSubview(recomendationCategory)
         view.addSubview(topFilmsCategory)
-        view.addSubview(bottomBorder)
         view.addSubview(searchTextField)
     }
     
     private func makeConstraints() {
-        pageHeader.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(71)
-        }
-        mainFrame.snp.makeConstraints { make in
-            make.top.equalTo(pageHeader.snp.bottom)
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalToSuperview()
-        }
-        bottomBorder.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(1)
-        }
         searchTextField.snp.makeConstraints { make in
-            make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Grid.verticalOffsetMedium)
             make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
-            make.height.equalTo(40)
+            make.height.equalTo(Grid.textFieldHeight)
         }
         recomendationCategory.snp.makeConstraints { make in
-            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
+            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffsetLarge)
             make.leading.equalToSuperview().inset(Grid.horizontalInset)
             make.trailing.equalToSuperview()
             make.height.equalTo(260)
         }
         topFilmsCategory.snp.makeConstraints { make in
-            make.top.equalTo(recomendationCategory.snp.bottom).offset(Grid.verticalOffset_l)
+            make.top.equalTo(recomendationCategory.snp.bottom).offset(Grid.verticalOffsetLarge)
             make.leading.equalToSuperview().inset(Grid.horizontalInset)
             make.trailing.equalToSuperview()
             make.height.equalTo(260)
         }
+        label.snp.makeConstraints { make in
+            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffsetLarge)
+            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
+            make.height.equalTo(50)
+        }
+        segmentControl.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Grid.verticalOffsetMedium)
+            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
+            make.centerX.equalToSuperview()
+            make.height.equalTo(Grid.segmentControlHeight)
+        }
+        searchTableView.snp.makeConstraints({ make in
+            make.leading.trailing.equalToSuperview().inset(Grid.horizontalInset)
+            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffsetLarge)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        })
     }
     
     private func setupBinding() {
-        viewModel.didLoadRecomendedFilms = { films in
+        viewModel.didLoadFilms = { category, films in
             DispatchQueue.main.async {
-                self.recomendationCategory.collectionView.addFilms(films: films)
-                self.recomendationCategory.collectionView.reloadData()
-            }
-        }
-        viewModel.didLoadTopFilms = { films in
-            DispatchQueue.main.async {
-                self.topFilmsCategory.collectionView.addFilms(films: films)
-                self.topFilmsCategory.collectionView.reloadData()
-            }
-        }
-        viewModel.didLoadRecomendedFilmsPosters = { posters in
-            DispatchQueue.main.async {
-//                self.recomendationCategory.collectionView.addPostersData(postersData: posters)
-                self.recomendationCategory.collectionView.reloadData()
-            }
-        }
-        viewModel.didLoadTopFilmsPosters = { posters in
-//            self.topFilmsCategory.collectionView.addPostersData(postersData: posters)
-            self.topFilmsCategory.collectionView.reloadData()
-        }
-        
-        viewModel.didLoadSearchedFIlms = { films in
-            DispatchQueue.main.async {
-                self.searchTableView?.addFilms(films: films)
-                self.searchTableView?.reloadData()
-            }
-        }
-        
-        viewModel.didLoadSearchedFilmsPostres = { posters in
-            DispatchQueue.main.async {
-                self.searchTableView?.addPostersData(postersData: posters)
-                self.searchTableView?.reloadData()
+                switch category {
+                case .recomended:
+                    self.recomendationCategory.collectionView.addFilms(films: films)
+                    
+                case .top:
+                    self.topFilmsCategory.collectionView.addFilms(films: films)
+                    
+                case .search:
+                    self.searchTableView.addFilms(films: films)
+                }
             }
         }
     }
@@ -161,82 +149,44 @@ class SearchViewController: UIViewController {
 extension SearchViewController: UITextFieldDelegate {
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        textField.endEditing(true)
-        removeViewsAfterEditing()
+        textField.text = ""
+        DispatchQueue.main.async {
+            textField.resignFirstResponder()
+        }
+        
+        label.isHidden = true
+        searchTableView.isHidden = true
+        segmentControl.isHidden = true
+        
         recomendationCategory.isHidden = false
         topFilmsCategory.isHidden = false
-        searchTableView?.removeFromSuperview()
         
         searchTextField.snp.remakeConstraints { make in
-            make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Grid.verticalOffsetMedium)
             make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
             make.height.equalTo(40)
         }
-        return true
+        return false
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         recomendationCategory.isHidden = true
         topFilmsCategory.isHidden = true
-        addSearchViews(isEmpty: textField.text?.isEmpty ?? true)
+        label.isHidden = false
+        segmentControl.isHidden = false
+        
+        searchTextField.snp.remakeConstraints { make in
+            make.top.equalTo(segmentControl.snp.bottom).offset(Grid.verticalOffsetMedium)
+            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
+            make.height.equalTo(40)
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.endEditing(true)
-        removeViewsAfterEditing()
-        
-        searchTableView = SearchFilmTableView()
-        guard let searchTableView = searchTableView else { return false }
-        view.addSubview(searchTableView)
-        
-        searchTableView.snp.makeConstraints({ make in
-            make.leading.trailing.equalToSuperview().inset(Grid.horizontalInset)
-            make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        })
-        
+        label.isHidden = true
+        searchTableView.isHidden = false
         viewModel.searchDidEnd(text: textField.text)
+        textField.endEditing(true)
         return true
-    }
-    
-    func addSearchViews(isEmpty: Bool) {
-        segmentControl = UISegmentedControl(items: [Text.Search.imdb, Text.Films.collection])
-        guard let segmentControl = segmentControl else { return }
-        segmentControl.setTitleTextAttributes([
-            NSAttributedString.Key.font: FontFamily.SFProText.medium.font(size: 16)], for: .normal)
-        segmentControl.selectedSegmentIndex = 0
-        view.addSubview(segmentControl)
-        
-        segmentControl.snp.makeConstraints { make in
-            make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
-            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
-            make.centerX.equalToSuperview()
-            make.height.equalTo(40)
-        }
-        searchTextField.snp.remakeConstraints { make in
-            make.top.equalTo(segmentControl.snp.bottom).offset(Grid.verticalOffset_m)
-            make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
-            make.height.equalTo(40)
-        }
-        
-        if isEmpty {
-            label = UILabel()
-            guard let label = label else { return }
-            label.text = Text.Search.hint
-            label.font = FontFamily.SFProText.regular.font(size: 16)
-            label.textColor = Asset.darkGray.color
-            label.numberOfLines = 0
-            view.addSubview(label)
-            
-            label.snp.makeConstraints { make in
-                make.top.equalTo(searchTextField.snp.bottom).offset(Grid.verticalOffset_l)
-                make.horizontalEdges.equalToSuperview().inset(Grid.horizontalInset)
-                make.height.equalTo(50)
-            }
-        }
-    }
-    
-    func removeViewsAfterEditing() {
-        label?.removeFromSuperview()
     }
 }

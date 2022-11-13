@@ -22,7 +22,7 @@ class AuthorizationViewController: UIViewController {
         button.layer.borderWidth = 3
         button.layer.borderColor = Asset.lightGray.color.cgColor
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17)
-//        button.isEnabled = false
+        button.isEnabled = false
         button.setTitle(Text.Authorization.enter, for: .normal)
         return button
     }()
@@ -53,7 +53,7 @@ class AuthorizationViewController: UIViewController {
     private let stackView: UIStackView = {
         let view = UIStackView()
         view.axis = .horizontal
-//        view.translatesAutoresizingMaskIntoConstraints = false
+        view.translatesAutoresizingMaskIntoConstraints = false
         view.distribution = .fillProportionally
         return view
     }()

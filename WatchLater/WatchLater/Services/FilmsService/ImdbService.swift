@@ -8,40 +8,18 @@
 import Foundation
 
 protocol ImdbServiceProtocol {
-    func getRecomendationFIlms(completion: @escaping (Result<ImdbFilmPage, Error>) -> Void)
-    func getTopFIlms(completion: @escaping (Result<ImdbFilmPage, Error>) -> Void)
+    func getFIlms(category: FilmCategory, completion: @escaping (Result<ImdbFilmPage, Error>) -> Void)
     func downloadPoster(url: String, completion: @escaping (Result<Data, Error>) -> Void)
     func searchFilmsByTitle(searchQuery: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void)
 }
 
-class ImdbService: ImdbServiceProtocol {
+final class ImdbService: ImdbServiceProtocol {
    
     private let networkManager = NetworkManager()
     
-    func getRecomendationFIlms(completion: @escaping (Result<ImdbFilmPage, Error>) -> Void) {
-        let path = "/MostPopularMovies/"
-        let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: nil)
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            do {
-                try response?.validateStatusCode()
-                if let data = data {
-                    print(data)
-                    let decodedData = try JSONDecoder().decode(ImdbFilmPage.self, from: data)
-                    completion(.success(decodedData))
-                }
-            } catch {
-                print(String(describing: error))
-                completion(.failure(error))
-            }
-        }.resume()
-    }
-    
-    func getTopFIlms(completion: @escaping (Result<ImdbFilmPage, Error>) -> Void) {
-        let path = "/Top250Movies/"
+    func getFIlms(category: FilmCategory, completion: @escaping (Result<ImdbFilmPage, Error>) -> Void) {
+        if category == .search { return }
+        let path = category.rawValue
         let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: nil)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -77,7 +55,7 @@ class ImdbService: ImdbServiceProtocol {
     }
     
     func searchFilmsByTitle(searchQuery: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void) {
-        let path = "/SearchMovie/"
+        let path = FilmCategory.search.rawValue
         let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: searchQuery)
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {

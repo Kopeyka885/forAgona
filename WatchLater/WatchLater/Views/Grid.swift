@@ -8,10 +8,11 @@
 import Foundation
 
 enum Grid {
-    static let horizontalOffset = 20
     static let horizontalInset = 20
-    static let verticalOffset_s = 10
-    static let verticalOffset_m = 20
-    static let verticalOffset_l = 30
+    static let verticalOffsetSmall = 10
+    static let verticalOffsetMedium = 20
+    static let verticalOffsetLarge = 30
     static let labelHeight = 50
+    static let segmentControlHeight = 40
+    static let textFieldHeight = 40
 }

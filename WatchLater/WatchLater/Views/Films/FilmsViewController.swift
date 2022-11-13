@@ -10,21 +10,6 @@ import UIKit
 
 class FilmsViewController: UIViewController {
     
-    private let pageHeader = PageHeader(text: Text.Films.collection)
-    
-    private let bottomBorder: UIView = {
-        let lineView = UIView()
-        lineView.layer.borderWidth = 2
-        lineView.layer.borderColor = Asset.darkGray.color.cgColor
-        return lineView
-    }()
-    
-    private let mainFrame: UIView = {
-        let view = UIView()
-        view.backgroundColor = .white
-        return view
-    }()
-    
     private let categorySwitcher: UISegmentedControl = {
         let segmentControl = UISegmentedControl(items: [Text.Films.willWatch, Text.Films.watched])
         segmentControl.setTitleTextAttributes([
@@ -34,7 +19,7 @@ class FilmsViewController: UIViewController {
     }()
     
     private var filmsCollectionView: FilmsCollectionView!
-    private var filmsTableView: FilmTableView?
+    private var filmsTableView: FilmTableView!
     private var viewModel: (FilmsViewModelInput & FilmsViewModelOutput)!
     private var isCollectionView = false
     
@@ -49,7 +34,18 @@ class FilmsViewController: UIViewController {
     }
     
     private func addSubviews() {
-        view.backgroundColor = Asset.lightGray.color
+        view.backgroundColor = .white
+        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.topItem?.title = Text.Films.collection
+        navigationController?.navigationBar.layer.shadowColor = Asset.lightGray.color.cgColor
+        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 1)
+        navigationController?.navigationBar.layer.shadowOpacity = 1
+        navigationController?.navigationBar.barTintColor = Asset.lightGray.color
+        
+        filmsCollectionView = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
+        filmsCollectionView.showCell = viewModel.showCell
+        filmsTableView = FilmTableView(reachedLastRow: viewModel.viewReachedLastRow)
         
         let searchBtn = UIBarButtonItem(
             image: Asset.search.image,
@@ -69,33 +65,29 @@ class FilmsViewController: UIViewController {
         navigationItem.rightBarButtonItem = tableOrListBtn
         navigationItem.titleView = UIImageView(image: Asset.smallLogo.image)
         
-        view.addSubview(pageHeader)
-        view.addSubview(mainFrame)
         view.addSubview(categorySwitcher)
-        view.addSubview(bottomBorder)
+        view.addSubview(filmsCollectionView)
+        view.addSubview(filmsTableView)
     }
     
     private func makeConstraints() {
-        pageHeader.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(71)
-        }
-        mainFrame.snp.makeConstraints { make in
-            make.top.equalTo(pageHeader.snp.bottom)
-            make.width.equalToSuperview()
-            make.height.equalToSuperview()
-        }
         categorySwitcher.snp.makeConstraints { make in
-            make.width.equalToSuperview().multipliedBy(0.92)
-            make.top.equalTo(pageHeader.snp.bottom).offset(20)
+            make.width.equalToSuperview().inset(Grid.horizontalInset)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Grid.verticalOffsetMedium)
             make.centerX.equalToSuperview()
-            make.height.equalTo(40)
+            make.height.equalTo(Grid.segmentControlHeight)
         }
-        bottomBorder.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+        filmsCollectionView.snp.makeConstraints { make in
+            make.top.equalTo(categorySwitcher.snp.bottom).offset(Grid.verticalOffsetMedium)
+            make.width.equalToSuperview().inset(Grid.horizontalInset)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(1)
+            make.centerX.equalToSuperview()
+        }
+        filmsTableView.snp.makeConstraints { make in
+            make.top.equalTo(categorySwitcher.snp.bottom).offset(Grid.verticalOffsetMedium)
+            make.width.equalToSuperview().inset(Grid.horizontalInset)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.centerX.equalToSuperview()
         }
     }
     
@@ -103,19 +95,8 @@ class FilmsViewController: UIViewController {
         viewModel.didLoadFilms = { films in
             DispatchQueue.main.async {
                 self.filmsCollectionView.addFilms(films: films)
-                self.filmsCollectionView.reloadData()
                 guard let filmsTableView = self.filmsTableView else { return }
                 filmsTableView.addFilms(films: films)
-                filmsTableView.reloadData()
-            }
-        }
-        viewModel.didLoadPosters = { posters in
-            DispatchQueue.main.async {
-                self.filmsCollectionView.addPostersData(postersData: posters)
-                self.filmsCollectionView.reloadData()
-                guard let filmsTableView = self.filmsTableView else { return }
-                filmsTableView.addPostersData(postersData: posters)
-                filmsTableView.reloadData()
             }
         }
     }
@@ -136,29 +117,14 @@ class FilmsViewController: UIViewController {
         isCollectionView = !isCollectionView
         if isCollectionView {
             if let filmsTableView = filmsTableView {
-                filmsTableView.removeFromSuperview()
+                filmsTableView.isHidden = true
+                filmsCollectionView.isHidden = false
             }
             navigationItem.rightBarButtonItem?.image = Asset.table.image
-            filmsCollectionView = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
-            view.addSubview(filmsCollectionView)
-            filmsCollectionView.snp.makeConstraints { make in
-                make.top.equalTo(categorySwitcher.snp.bottom).offset(20)
-                make.width.equalToSuperview().multipliedBy(0.92)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-                make.centerX.equalToSuperview()
-            }
         } else {
-            filmsCollectionView.removeFromSuperview()
+            filmsCollectionView.isHidden = true
+            filmsTableView.isHidden = false
             navigationItem.rightBarButtonItem?.image = Asset.list.image
-            filmsTableView = FilmTableView(reachedLastRow: viewModel.viewReachedLastRow)
-            guard let filmsTableView = filmsTableView else { return }
-            view.addSubview(filmsTableView)
-            filmsTableView.snp.makeConstraints { make in
-                make.top.equalTo(categorySwitcher.snp.bottom).offset(20)
-                make.width.equalToSuperview().multipliedBy(0.92)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-                make.centerX.equalToSuperview()
-            }
         }
     }
 }

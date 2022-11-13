@@ -1,5 +1,5 @@
 //
-//  SearchFilmTableViewCell.swift
+//  SearchFilmsTableViewCell.swift
 //  StartProject-ios
 //
 //  Created by Камиль Кадыров on 30.10.2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchFilmTableViewCell: UITableViewCell {
+class SearchFilmsTableViewCell: UITableViewCell {
     
     static let reuseID = "SearchFilmTableViewCell"
     
@@ -29,6 +29,7 @@ class SearchFilmTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
+        backgroundColor = Asset.lightGray.color
         addSubview(image)
         addSubview(title)
         
@@ -36,11 +37,11 @@ class SearchFilmTableViewCell: UITableViewCell {
             make.leading.top.equalToSuperview()
             make.height.equalTo(160)
             make.width.equalTo(100)
-            make.bottom.equalToSuperview().inset(Grid.verticalOffset_l)
+            make.bottom.equalToSuperview().inset(Grid.verticalOffsetLarge)
         }
         title.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
-            make.leading.equalTo(image.snp.trailing).offset(Grid.horizontalOffset)
+            make.leading.equalTo(image.snp.trailing).offset(Grid.horizontalInset)
             make.top.equalToSuperview()
             make.height.equalTo(50)
         }

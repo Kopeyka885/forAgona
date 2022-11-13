@@ -14,21 +14,12 @@ protocol SearchViewModelInput {
 }
 
 protocol SearchViewModelOutput {
-    var didLoadRecomendedFilms: ((_ films: [Film]) -> Void)? { get set }
-    var didLoadTopFilms: ((_ films: [Film]) -> Void)? { get set }
-    var didLoadRecomendedFilmsPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
-    var didLoadTopFilmsPosters: ((_ posters: [Int: Data]) -> Void)? { get set }
-    var didLoadSearchedFIlms: ((_ films: [Film]) -> Void)? { get set }
-    var didLoadSearchedFilmsPostres: ((_ posters: [Int: Data]) -> Void)? { get set }
+    var didLoadFilms: ((_ category: FilmCategory, _ films: [Film]) -> Void)? { get set }
 }
 
 final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
-    var didLoadRecomendedFilms: (([Film]) -> Void)?
-    var didLoadTopFilms: (([Film]) -> Void)?
-    var didLoadRecomendedFilmsPosters: (([Int: Data]) -> Void)?
-    var didLoadTopFilmsPosters: ((_ posters: [Int: Data]) -> Void)?
-    var didLoadSearchedFIlms: ((_ films: [Film]) -> Void)?
-    var didLoadSearchedFilmsPostres: ((_ posters: [Int: Data]) -> Void)?
+    let amountOfFilmsToShow = 15
+    var didLoadFilms: ((_ category: FilmCategory, _ films: [Film]) -> Void)?
     private let imdbService: ImdbServiceProtocol
     
     init(imdbService: ImdbServiceProtocol) {
@@ -36,49 +27,8 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
     }
     
     func viewDidLoad() {
-        imdbService.getRecomendationFIlms { response in
-            switch response {
-            case .success(let imdbFilmPage):
-                var films = [Film]()
-                for item in imdbFilmPage.items[...15] {
-                    let film = Film(id: Int(item.rank) ?? 0,
-                                    title: item.title,
-                                    posterId: item.image,
-                                    description: nil,
-                                    genres: nil,
-                                    rating: Float(item.imDbRating) ?? 0,
-                                    date: item.year)
-                    films.append(film)
-                }
-                self.didLoadRecomendedFilms?(films)
-                self.downloadFilmsPosters(filmCategory: .recomended, films: films)
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-        
-        imdbService.getTopFIlms { response in
-            switch response {
-            case .success(let imdbFilmPage):
-                var films = [Film]()
-                for item in imdbFilmPage.items[...15] {
-                    let film = Film(id: Int(item.rank) ?? 0,
-                                    title: item.title,
-                                    posterId: item.image,
-                                    description: nil,
-                                    genres: nil,
-                                    rating: Float(item.imDbRating) ?? 0,
-                                    date: item.year)
-                    films.append(film)
-                }
-                self.didLoadTopFilms?(films)
-                self.downloadFilmsPosters(filmCategory: .top, films: films)
-                
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
+        downloadCategoryFilms(category: .recomended)
+        downloadCategoryFilms(category: .top)
     }
     
     func viewReachedLastRow() {
@@ -89,19 +39,17 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
         imdbService.searchFilmsByTitle(searchQuery: text) { response in
             switch response {
             case .success(let searchResult):
-                var films = [Film]()
-                for item in searchResult.results {
-                    let film = Film(id: Int(item.id[item.id.index(item.id.startIndex, offsetBy: 2)...]) ?? 0,
-                                    title: item.title,
-                                    posterId: item.image,
-                                    description: item.description,
-                                    genres: nil,
-                                    rating: nil,
-                                    date: nil)
-                    films.append(film)
+                let films = searchResult.results.map { item in
+                    Film(
+                        id: Int(item.id[item.id.index(item.id.startIndex, offsetBy: 2)...]) ?? 0,
+                        title: item.title,
+                        posterId: item.image,
+                        description: item.description,
+                        genres: nil,
+                        rating: nil,
+                        date: nil)
                 }
-                self.didLoadSearchedFIlms?(films)
-                self.downloadFilmsPosters(filmCategory: .search, films: films)
+                self.didLoadFilms?(.search, films)
                 
             case .failure(let error):
                 print(error.localizedDescription)
@@ -109,39 +57,31 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
         }
     }
     
-    private func downloadFilmsPosters(filmCategory: FilmCategory, films: [Film]) {
-        let group = DispatchGroup()
-        var posters = [Int: Data]()
-        for film in films {
-            group.enter()
-            imdbService.downloadPoster(url: film.posterId ?? "") { response in
-                switch response {
-                case .success(let data):
-                    posters[film.id] = data
-                    
-                case .failure(let error):
-                    print(error)
+    private func downloadCategoryFilms(category: FilmCategory) {
+        imdbService.getFIlms(category: category) { response in
+            switch response {
+            case .success(let imdbFilmPage):
+                let films = imdbFilmPage.items[...self.amountOfFilmsToShow].map { item in
+                    Film(
+                        id: Int(item.rank) ?? 0,
+                        title: item.title,
+                        posterId: item.image,
+                        description: nil,
+                        genres: nil,
+                        rating: Float(item.imDbRating) ?? 0,
+                        date: item.year)
                 }
-                group.leave()
-            }
-        }
-        group.notify(queue: .main) {
-            switch filmCategory {
-            case .recomended:
-                self.didLoadRecomendedFilmsPosters?(posters)
+                self.didLoadFilms?(category, films)
                 
-            case .top:
-                self.didLoadTopFilmsPosters?(posters)
-                
-            case .search:
-                self.didLoadSearchedFilmsPostres?(posters)
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
     }
 }
 
-enum FilmCategory {
-    case recomended
-    case top
-    case search
+enum FilmCategory: String {
+    case recomended = "/MostPopularMovies/"
+    case top = "/Top250Movies/"
+    case search = "/SearchMovie/"
 }

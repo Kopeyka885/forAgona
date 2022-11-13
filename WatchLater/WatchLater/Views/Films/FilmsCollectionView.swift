@@ -7,12 +7,12 @@
 //
 
 import UIKit
+import Kingfisher
 
 class FilmsCollectionView: UICollectionView {
-    
-    private var filmsPosters = [Int: Data]()
-    private var cells = [Film]()
+    var cells = [Film]()
     var reachedLastRow: (() -> Void)?
+    var showCell: ((_ cell: FilmCollectionViewCell, _ posterId: String, _ index: IndexPath) -> Void)?
     
     init(isVertical: Bool = true, reachedLastRow: @escaping (() -> Void)) {
         let layout = UICollectionViewFlowLayout()
@@ -21,7 +21,7 @@ class FilmsCollectionView: UICollectionView {
         
         delegate = self
         dataSource = self
-        backgroundColor = .white
+        backgroundColor = Asset.lightGray.color
         self.reachedLastRow = reachedLastRow
         register(FilmCollectionViewCell.self, forCellWithReuseIdentifier: FilmCollectionViewCell.reuseID)
     }
@@ -57,13 +57,9 @@ extension FilmsCollectionView: UICollectionViewDataSource {
             
             cell.title.text = cells[indexPath.row].title
             cell.ratingView.label.text = cells[indexPath.row].rating?.description ?? "-"
-            cell.imageView.image = nil
-            
-            let filmId = cells[indexPath.row].id
-            if let posterData = filmsPosters[filmId] {
-                cell.imageView.image = UIImage(data: posterData)
+            if let posterId = cells[indexPath.row].posterId {
+                showCell?(cell, posterId, indexPath)
             }
-            
             return cell
         }
 }
@@ -71,9 +67,8 @@ extension FilmsCollectionView: UICollectionViewDataSource {
 extension FilmsCollectionView: FilmsCollectable {
     func addFilms(films: [Film]) {
         cells.append(contentsOf: films)
-    }
-    func addPostersData(postersData: [Int: Data]) {
-        filmsPosters.merge(postersData) { data1, _ in return data1 }
+        let indexPaths = Array((cells.count - films.count) ..< cells.count).map({ IndexPath(row: $0, section: 0) })
+        self.insertItems(at: indexPaths)
     }
 }
 
@@ -83,8 +78,9 @@ extension FilmsCollectionView: UICollectionViewDelegateFlowLayout {
     func collectionView(
         _ collectionView: UICollectionView,
         layout collectionViewLayout: UICollectionViewLayout,
-        sizeForItemAt indexPath: IndexPath) -> CGSize {
-            let width = collectionView.frame.width
-            return CGSize(width: width / 3 - 10, height: (width / 3 - 10) * 2.1)
-        }
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        let width = collectionView.frame.width
+        return CGSize(width: width / 3 - 10, height: (width / 3 - 10) * 2.1)
+    }
 }

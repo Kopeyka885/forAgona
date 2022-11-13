@@ -9,24 +9,23 @@ import UIKit
 
 class CategoryFilmsViewController: UIViewController {
     
-    private var pageHeader: PageHeader
-    private var filmsCollection: (FilmsCollectable & UIView)!
-    private var viewModel: (RecomendedFilmsViewModelInput & RecomendedFilmsViewModelOutput)!
+    private var filmsCollection: CategoryFilmsCollectionView!
+    private var viewModel: (CategoryFilmsViewModelInput & CategoryFilmsViewModelOutput)!
     private var filmsCategory: FilmCategory
     
     init(filmsCategory: FilmCategory) {
-        switch filmsCategory {
-        case .recomended:
-            pageHeader = PageHeader(text: Text.Search.recomendation)
-            
-        case .top:
-            pageHeader = PageHeader(text: Text.Search.topFilms)
-            
-        case .search:
-            pageHeader = PageHeader(text: Text.Search.search)
-        }
         self.filmsCategory = filmsCategory
         super.init(nibName: nil, bundle: nil)
+        switch filmsCategory {
+        case .recomended:
+            title = Text.Search.recomendation
+            
+        case .top:
+            title = Text.Search.topFilms
+            
+        case .search:
+            title = Text.Search.search
+        }
     }
     
     @available(*, unavailable)
@@ -36,8 +35,8 @@ class CategoryFilmsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = RecomendedFilmsViewModel(filmsCategory: filmsCategory)
-        filmsCollection = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
+        viewModel = CategoryFilmsViewModel(filmsCategory: filmsCategory)
+        filmsCollection = CategoryFilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
         addSubviews()
         makeConstraints()
         setupBinding()
@@ -45,20 +44,19 @@ class CategoryFilmsViewController: UIViewController {
     }
     
     private func addSubviews() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.layer.shadowColor = Asset.lightGray.color.cgColor
+        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 1)
+        navigationController?.navigationBar.layer.shadowOpacity = 1
+        
         view.backgroundColor = .white
-        view.addSubview(pageHeader)
         view.addSubview(filmsCollection)
     }
     
     private func makeConstraints() {
-        pageHeader.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(71)
-        }
         filmsCollection.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(Grid.horizontalInset)
-            make.top.equalTo(pageHeader.snp.bottom).offset(Grid.verticalOffset_m)
+            make.top.equalTo(view.safeAreaLayoutGuide).offset(Grid.verticalOffsetMedium)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
@@ -67,13 +65,6 @@ class CategoryFilmsViewController: UIViewController {
         viewModel.didLoadFilms = { films in
             DispatchQueue.main.async {
                 self.filmsCollection.addFilms(films: films)
-//                self.filmsCollection.reloadData()
-            }
-        }
-        viewModel.didLoadPosters = { posters in
-            DispatchQueue.main.async {
-//                self.filmsCollection.addPostersData(postersData: posters)
-//                self.filmsCollection.reloadData()
             }
         }
     }

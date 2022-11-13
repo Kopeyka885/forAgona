@@ -25,6 +25,9 @@ enum MainTabBarControllerFactory {
         tabbarVC.tabBar.items?[2].image = Asset.profile.image
         tabbarVC.modalPresentationStyle = .fullScreen
         tabbarVC.tabBar.backgroundColor = Asset.lightGray.color
+        tabbarVC.tabBar.layer.shadowOffset = CGSize(width: 0, height: 1)
+        tabbarVC.tabBar.layer.shadowColor = UIColor.black.cgColor
+        tabbarVC.tabBar.layer.shadowOpacity = 1
         return tabbarVC
     }
 }

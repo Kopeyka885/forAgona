@@ -10,7 +10,7 @@ import Foundation
 protocol ImdbServiceProtocol {
     func getFIlms(category: FilmCategory, completion: @escaping (Result<ImdbFilmPage, Error>) -> Void)
     func downloadPoster(url: String, completion: @escaping (Result<Data, Error>) -> Void)
-    func searchFilmsByTitle(searchQuery: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void)
+    func searchFilmsByTitle(title: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void)
 }
 
 final class ImdbService: ImdbServiceProtocol {
@@ -19,8 +19,9 @@ final class ImdbService: ImdbServiceProtocol {
     
     func getFIlms(category: FilmCategory, completion: @escaping (Result<ImdbFilmPage, Error>) -> Void) {
         if category == .search { return }
-        let path = category.rawValue
-        let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: nil)
+        let request = networkManager.makeRequestToImdb(
+            endpoint: .getFilmsByCategory(category: category)
+        )
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))
@@ -54,9 +55,9 @@ final class ImdbService: ImdbServiceProtocol {
         }.resume()
     }
     
-    func searchFilmsByTitle(searchQuery: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void) {
-        let path = FilmCategory.search.rawValue
-        let request = networkManager.makeRequestToImdb(path: path, method: "GET", query: searchQuery)
+    func searchFilmsByTitle(title: String?, completion: @escaping (Result<ImdbSearchResult, Error>) -> Void) {
+        guard let title = title else { return }
+        let request = networkManager.makeRequestToImdb(endpoint: .searchFilmByTitle(title: title))
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(error))

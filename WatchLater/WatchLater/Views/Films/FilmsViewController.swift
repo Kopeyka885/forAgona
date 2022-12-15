@@ -37,11 +37,11 @@ class FilmsViewController: UIViewController {
         view.backgroundColor = .white
         
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationBar.topItem?.title = Text.Films.collection
-        navigationController?.navigationBar.layer.shadowColor = Asset.lightGray.color.cgColor
-        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 1)
-        navigationController?.navigationBar.layer.shadowOpacity = 1
-        navigationController?.navigationBar.barTintColor = Asset.lightGray.color
+        title = Text.Films.collection
+//        navigationController?.navigationBar.layer.shadowColor = Asset.lightGray.color.cgColor
+//        navigationController?.navigationBar.layer.shadowOffset = CGSize(width: 0, height: 1)
+//        navigationController?.navigationBar.layer.shadowOpacity = 1
+//        navigationController?.navigationBar.barTintColor = Asset.lightGray.color
         
         filmsCollectionView = FilmsCollectionView(reachedLastRow: viewModel.viewReachedLastRow)
         filmsCollectionView.showCell = viewModel.showCell

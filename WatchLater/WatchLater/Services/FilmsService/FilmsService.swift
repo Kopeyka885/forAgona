@@ -20,8 +20,7 @@ class FilmsService: FilmsServiceProtocol {
         size: Int,
         completion: @escaping (Result<SystemFilmPage, Error>) -> Void
     ) {
-        let queryParams = "page=\(page)&size=\(size)"
-        let request = NetworkManager().makeRequest(path: Endpoints.getFilms.rawValue, method: "GET", query: queryParams)
+        let request = NetworkManager().makeRequest(endpoint: Endpoints.getFilms(page: page, size: size))
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
@@ -47,9 +46,8 @@ class FilmsService: FilmsServiceProtocol {
                 completion(.failure(NetworkError.noParameters))
                 return
             }
-            let path = Endpoints.getPoster.rawValue + "/\(id)"
-            var request = NetworkManager().makeRequest(path: path, method: "GET", query: nil)
-            request.timeoutInterval = 2
+            let endpoint = Endpoints.getPoster(id: id)
+            let request = NetworkManager().makeRequest(endpoint: endpoint)
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
                     completion(.failure(error))

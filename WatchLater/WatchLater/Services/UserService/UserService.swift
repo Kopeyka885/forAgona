@@ -17,7 +17,7 @@ class UserService: UserServiceProtocol {
     func registrateUser(email: String, password: String, completion: @escaping (Result<UserDto, Error>) -> Void) {
         let user = UserAuthDto(email: email, password: password)
         guard let uploadData = try? JSONEncoder().encode(user) else { return }
-        let request = NetworkManager().makeRequest(path: Endpoints.registration.rawValue, method: "POST", query: nil)
+        let request = NetworkManager().makeRequest(endpoint: .registration, auth: false)
         URLSession.shared.uploadTask(with: request, from: uploadData) { data, response, error in
             if let error = error {
                 completion(.failure(error))

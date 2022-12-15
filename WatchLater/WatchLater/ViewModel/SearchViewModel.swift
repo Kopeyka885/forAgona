@@ -36,7 +36,7 @@ final class SearchViewModel: SearchViewModelInput, SearchViewModelOutput {
     }
     
     func searchDidEnd(text: String?) {
-        imdbService.searchFilmsByTitle(searchQuery: text) { response in
+        imdbService.searchFilmsByTitle(title: text) { response in
             switch response {
             case .success(let searchResult):
                 let films = searchResult.results.map { item in

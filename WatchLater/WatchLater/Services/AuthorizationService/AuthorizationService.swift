@@ -23,7 +23,7 @@ class AuthorizationService: AuthorizationServiceProtocol {
         guard let uploadData = try? JSONEncoder().encode(user) else {
             return
         }
-        let request = NetworkManager().makeRequest(path: Endpoints.userAuthorization.rawValue, method: "POST", query: nil)
+        let request = NetworkManager().makeRequest(endpoint: .userAuthorization, auth: false)
         URLSession.shared.uploadTask(with: request, from: uploadData) { data, response, error in
             if let error = error {
                 completion(.failure(error))

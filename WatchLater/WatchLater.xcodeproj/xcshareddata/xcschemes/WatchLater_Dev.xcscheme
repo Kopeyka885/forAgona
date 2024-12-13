@@ -38,6 +38,17 @@
                ReferencedContainer = "container:WatchLater.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "0A342F6C2C3599D5002E1B82"
+               BuildableName = "WatchLater_DevUITests.xctest"
+               BlueprintName = "WatchLater_DevUITests"
+               ReferencedContainer = "container:WatchLater.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -67,15 +78,6 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "306BF30D25FC8F7200E9B481"
-            BuildableName = "WatchLater_Dev.app"
-            BlueprintName = "WatchLater_Dev"
-            ReferencedContainer = "container:WatchLater.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

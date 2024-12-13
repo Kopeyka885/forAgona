@@ -84,8 +84,8 @@ class AuthorizationViewController: UIViewController {
         setupBinding()
         initializeViews()
         initializeConstraints()
-        emailTextField.textField.text = "string@mail.com"
-        passwordTextField.textField.text = "string"
+//        emailTextField.textField.text = "string@mail.com"
+//        passwordTextField.textField.text = "string"
     }
     
     private func initializeViews() {
